@@ -1,11 +1,17 @@
-package com.tilfin.air.http.server {
-	import com.tilfin.air.http.server.events.ServiceEvent;
-	import com.tilfin.air.http.server.service.IService;
-
+package com.tilfin.airthttpd.server {
+	import com.tilfin.airthttpd.events.HandleEvent;
+	import com.tilfin.airthttpd.services.IService;
+	
 	import flash.events.Event;
 	import flash.events.ServerSocketConnectEvent;
 	import flash.net.ServerSocket;
 
+	/**
+	 * HTTP Listening Server
+	 *  
+	 * @author toshi
+	 * 
+	 */
 	public class HttpListener {
 
 		private var _serverSocket:ServerSocket;
@@ -38,13 +44,13 @@ package com.tilfin.air.http.server {
 
 		private function onConnect(event:ServerSocketConnectEvent):void {
 			var conn:HttpConnection = new HttpConnection(event.socket);
-			conn.addEventListener(ServiceEvent.SERVICE, onService);
+			conn.addEventListener(HandleEvent.HANDLE, onHandle);
 			conn.addEventListener(Event.CLOSE, onConnectionClose);
 			_connections.push(conn);
 		}
 
-		private function onService(event:ServiceEvent):void {
-			_service.service(event.request, event.response);
+		private function onHandle(event:HandleEvent):void {
+			_service.doService(event.request, event.response);
 		}
 
 		private function onClose(event:Event):void {

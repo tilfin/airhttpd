@@ -1,7 +1,13 @@
-package com.tilfin.air.http.server {
+package com.tilfin.airthttpd.server {
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
 
+	/**
+	 * HTTP Response
+	 *  
+	 * @author toshi
+	 * 
+	 */
 	public class HttpResponse {
 		
 		private static const SERVER:String = "Server: AirHttpd/0.0.1";

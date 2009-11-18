@@ -1,15 +1,15 @@
-package com.tilfin.air.http.server {
-	import com.tilfin.air.http.server.events.ServiceEvent;
-
+package com.tilfin.airthttpd.server {
+	import com.tilfin.airthttpd.events.HandleEvent;
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.ProgressEvent;
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
-
+	
 	import mx.utils.StringUtil;
 
-	[Event(type="com.tilfin.air.http.server.events.ServiceEvent", name="service")]
+	[Event(type="com.tilfin.airhttpd.events.HandleEvent", name="handle")]
 
 	[Event(type="flash.events.Event", name="close")]
 
@@ -59,7 +59,7 @@ package com.tilfin.air.http.server {
 					bodybuf = null;
 
 					// request with the body. 
-					procRequest(_httpreq);
+					handleRequest(_httpreq);
 					_httpreq = null;
 
 					if (_reqbuf.length == 0)
@@ -81,7 +81,7 @@ package com.tilfin.air.http.server {
 
 				if (_httpreq.method == "GET" || !_httpreq.contentLength) {
 					// request without the body.
-					procRequest(_httpreq);
+					handleRequest(_httpreq);
 					_httpreq = null;
 				}
 			}
@@ -106,8 +106,8 @@ package com.tilfin.air.http.server {
 			return new HttpRequest(request, entries);
 		}
 
-		private function procRequest(httpreq:HttpRequest):void {
-			var evt:ServiceEvent = new ServiceEvent();
+		private function handleRequest(httpreq:HttpRequest):void {
+			var evt:HandleEvent = new HandleEvent();
 			evt.request = httpreq;
 			evt.response = new HttpResponse(_socket);
 			dispatchEvent(evt);
