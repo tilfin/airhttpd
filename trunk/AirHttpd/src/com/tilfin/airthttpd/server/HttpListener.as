@@ -7,6 +7,7 @@ package com.tilfin.air.http.server {
 	import flash.net.ServerSocket;
 
 	public class HttpListener {
+
 		private var _serverSocket:ServerSocket;
 
 		private var _connections:Array;
