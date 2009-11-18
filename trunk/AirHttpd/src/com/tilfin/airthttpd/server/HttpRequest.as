@@ -1,6 +1,12 @@
-package com.tilfin.air.http.server {
+package com.tilfin.airthttpd.server {
 	import flash.utils.ByteArray;
 
+	/**
+	 * HTTP Request
+	 *  
+	 * @author toshi
+	 * 
+	 */
 	public class HttpRequest {
 		private var _method:String;
 		private var _path:String;

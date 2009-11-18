@@ -2,11 +2,8 @@
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
 	<mx:Script>
 		<![CDATA[
-			import com.tilfin.air.http.server.service.SampleService;
-			import com.tilfin.air.http.server.HttpRequest;
-			import com.tilfin.air.http.server.HttpResponse;
-			import com.tilfin.air.http.server.events.ServiceEvent;
-			import com.tilfin.air.http.server.HttpListener;
+			import com.tilfin.airthttpd.services.SampleService;
+			import com.tilfin.airthttpd.server.HttpListener;
 			
 			private var listener:HttpListener;
 			
