@@ -32,6 +32,10 @@ package com.tilfin.airthttpd.server {
 		}
 
 		public function listen(port:int):void {
+			if (_serverSocket.listening) {
+				return;
+			}
+			
 			_connections = new Array();
 
 			_serverSocket.bind(port);
@@ -39,7 +43,17 @@ package com.tilfin.airthttpd.server {
 		}
 
 		public function shutdown():void {
+			if (!_serverSocket.listening) {
+				return;
+			}
+			
+			onClose(null);
+			
+			_serverSocket.removeEventListener(Event.CONNECT, onConnect);
+			_serverSocket.removeEventListener(Event.CLOSE, onClose);
 			_serverSocket.close();
+			_serverSocket = null;
+			_connections = null;
 		}
 
 		private function onConnect(event:ServerSocketConnectEvent):void {
@@ -64,6 +78,8 @@ package com.tilfin.airthttpd.server {
 
 		private function onConnectionClose(e:Event):void {
 			var conn:HttpConnection = e.target as HttpConnection;
+			conn.removeEventListener(HandleEvent.HANDLE, onHandle);
+			conn.removeEventListener(Event.CLOSE, onConnectionClose);
 			conn.dispose();
 			_connections.splice(_connections.indexOf(conn), 1);
 		}

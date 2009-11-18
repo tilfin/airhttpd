@@ -47,9 +47,13 @@ package com.tilfin.airthttpd.server {
 			}
 		}
 
-		public function set body(data:String):void {
-			_body = new ByteArray();
-			_body.writeUTFBytes(data);
+		public function set body(data:*):void {
+			if (data is ByteArray) {
+				_body = data;
+			} else {
+				_body = new ByteArray();
+				_body.writeUTFBytes(data);
+			}
 		}
 
 		public function flush():void {
