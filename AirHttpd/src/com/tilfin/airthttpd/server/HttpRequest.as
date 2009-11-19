@@ -48,12 +48,12 @@ package com.tilfin.airthttpd.server {
 			return _headers["accept-language"];
 		}
 
-		public function get keepAlive():String {
-			return _headers["keep-alive"];
-		}
-
 		public function get connection():String {
-			return _headers.connection;
+			if (_headers.hasOwnProperty("connection")) {
+				return String(_headers["connection"]).toLowerCase();
+			} else {
+				return null;
+			}
 		}
 
 		public function get referer():String {
