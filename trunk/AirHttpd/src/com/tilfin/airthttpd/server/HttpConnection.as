@@ -49,7 +49,7 @@ package com.tilfin.airthttpd.server {
 						return;
 
 					var bodybuf:ByteArray = new ByteArray();
-					_reqbuf.readBytes(bodybuf, 0, _httpreq.contentLength);
+					bodybuf.writeBytes(_reqbuf, 0, _httpreq.contentLength);
 
 					temp = new ByteArray();
 					temp.writeBytes(_reqbuf, _httpreq.contentLength);
@@ -107,12 +107,21 @@ package com.tilfin.airthttpd.server {
 		}
 
 		private function handleRequest(httpreq:HttpRequest):void {
+			var httpres:HttpResponse = new HttpResponse(_socket);
+			
+			httpres.connection = httpreq.connection;
+			
 			var evt:HandleEvent = new HandleEvent();
 			evt.request = httpreq;
-			evt.response = new HttpResponse(_socket);
+			evt.response = httpres;
+			
 			dispatchEvent(evt);
 
-			evt.response.flush();
+			httpres.flush();
+			
+			if (httpreq.connection == "close") {
+				dispose();
+			}
 		}
 
 		public function dispose():void {
