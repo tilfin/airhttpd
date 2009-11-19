@@ -19,8 +19,12 @@ package com.tilfin.airthttpd.server {
 		private var _connections:Array;
 
 		private var _service:IService;
+		
+		private var _logCallback:Function
 
-		public function HttpListener() {
+		public function HttpListener(logCallback:Function) {
+			_logCallback = logCallback;
+			
 			_serverSocket = new ServerSocket();
 
 			_serverSocket.addEventListener(Event.CONNECT, onConnect);
@@ -64,7 +68,12 @@ package com.tilfin.airthttpd.server {
 		}
 
 		private function onHandle(event:HandleEvent):void {
-			_service.doService(event.request, event.response);
+			var req:HttpRequest = event.request;
+			var res:HttpResponse = event.response;
+			
+			_service.doService(req, res);
+			
+			_logCallback(req.method + " " + req.path + " " + req.version + " " + res.status);
 		}
 
 		private function onClose(event:Event):void {

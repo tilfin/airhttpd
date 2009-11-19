@@ -45,8 +45,12 @@ package com.tilfin.airthttpd.server {
 		public function set contentType(value:String):void {
 			_contentType = value;
 		}
+		
+		public function get status():String {
+			return _status;
+		}
 
-		public function set status(code:int):void {
+		public function set statusCode(code:int):void {
 			_statusCode = code;
 			
 			switch (code) {

@@ -20,8 +20,8 @@
 					return;
 				}
 				
-				listener = new HttpListener();
-				listener.service = new FileService(docrootFile, logging);
+				listener = new HttpListener(logging);
+				listener.service = new FileService(docrootFile);
 				listener.listen(parseInt(portTextInput.text, 10));
 				listenButton.enabled = false;
 				shutdownButton.enabled = true;

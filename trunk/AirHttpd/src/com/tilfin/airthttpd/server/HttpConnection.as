@@ -112,6 +112,7 @@ package com.tilfin.airthttpd.server {
 			httpres.connection = httpreq.connection;
 			
 			var evt:HandleEvent = new HandleEvent();
+			evt.socket = _socket;
 			evt.request = httpreq;
 			evt.response = httpres;
 			
