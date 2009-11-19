@@ -32,8 +32,6 @@ package com.tilfin.airthttpd.services {
 		}
 
 		private var _docroot:String;
-		
-		private var _logCallback:Function
 
 		/**
 		 * Contructor
@@ -41,9 +39,8 @@ package com.tilfin.airthttpd.services {
 		 * @param docroot document root path
 		 *
 		 */
-		public function FileService(docroot:File, logCallback:Function) {
+		public function FileService(docroot:File) {
 			_docroot = docroot.url;
-			_logCallback = logCallback;
 		}
 
 		/**
@@ -58,9 +55,8 @@ package com.tilfin.airthttpd.services {
 			}
 			
 			if (!file.exists) {
-				response.status = 404;
+				response.statusCode = 404;
 				response.body = "<html><body><h1>Not Found</h1></body></html>";
-				_logCallback(request.method + " " + request.path + "\tNot Found");
 				return;
 			}
 			
@@ -74,7 +70,6 @@ package com.tilfin.airthttpd.services {
 			fs.close();
 			
 			response.body = data;
-			_logCallback(request.method + " " + request.path + "\tOK");
 		}
 
 	}
