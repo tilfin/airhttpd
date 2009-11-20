@@ -73,7 +73,7 @@ package com.tilfin.airthttpd.server {
 					return;
 				}
 
-				_httpreq = getHttpRequest(bufstr.substr(0, headerEndPos - 1));
+				_httpreq = getHttpRequest(bufstr.substr(0, headerEndPos));
 
 				temp = new ByteArray();
 				temp.writeBytes(_reqbuf, headerEndPos + 4);
