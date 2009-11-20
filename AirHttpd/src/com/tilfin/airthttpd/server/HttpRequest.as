@@ -8,6 +8,8 @@ package com.tilfin.airthttpd.server {
 	 * 
 	 */
 	public class HttpRequest {
+		
+		private var _firstLine:String;
 		private var _method:String;
 		private var _path:String;
 		private var _version:String;
@@ -18,12 +20,17 @@ package com.tilfin.airthttpd.server {
 
 		public function HttpRequest(request:String, headers:Object):void {
 			var req:Array = request.split(" ", 3);
+			_firstLine = request;
 			_method = req[0];
 			_path = req[1];
 			_version = req[2];
 			_headers = headers;
 		}
 
+		public function get firstLine():String {
+			return _firstLine;
+		}
+		
 		public function get method():String {
 			return _method;
 		}

@@ -1,12 +1,12 @@
 package com.tilfin.airthttpd.server {
 	import com.tilfin.airthttpd.events.HandleEvent;
-	
+
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.ProgressEvent;
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
-	
+
 	import mx.utils.StringUtil;
 
 	[Event(type="com.tilfin.airhttpd.events.HandleEvent", name="handle")]
@@ -108,18 +108,17 @@ package com.tilfin.airthttpd.server {
 
 		private function handleRequest(httpreq:HttpRequest):void {
 			var httpres:HttpResponse = new HttpResponse(_socket);
-			
 			httpres.connection = httpreq.connection;
-			
+
 			var evt:HandleEvent = new HandleEvent();
 			evt.socket = _socket;
 			evt.request = httpreq;
 			evt.response = httpres;
-			
+
 			dispatchEvent(evt);
 
-			httpres.flush();
-			
+			httpres.flush(httpreq.method == "HEAD");
+
 			if (httpreq.connection == "close") {
 				dispose();
 			}
