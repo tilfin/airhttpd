@@ -71,6 +71,10 @@ package com.tilfin.airthttpd.server {
 		public function get contentLength():Number {
 			return parseInt(_headers["content-length"], 10);
 		}
+		
+		public function get authorization():String {
+			return _headers["authorization"];
+		}
 
 		public function get requestBody():ByteArray {
 			return _bytes;

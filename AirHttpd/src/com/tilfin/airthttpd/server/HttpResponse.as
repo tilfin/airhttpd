@@ -14,6 +14,8 @@ package com.tilfin.airthttpd.server {
 
 		private static const SERVER:String = "Server: AirHttpd/0.0.1";
 		private static const NEWLINE:String = "\r\n";
+		
+		private static const CONNECTION:String = "Connection";
 
 		private static const VERSION:String = "HTTP/1.x ";
 
@@ -25,6 +27,7 @@ package com.tilfin.airthttpd.server {
 		private var _contentType:String = "text/html";
 		private var _connection:String;
 		private var _keepalive:String;
+		private var _headers:Object;
 
 		private var _body:ByteArray;
 
@@ -32,13 +35,15 @@ package com.tilfin.airthttpd.server {
 
 		public function HttpResponse(socket:Socket) {
 			_socket = socket;
+			
+			_headers = new Object();
 		}
 		
 		public function set connection(value:String):void {
 			if (value) {
-				_connection = "Connection: " + value;
+				_headers[CONNECTION] = value;
 			} else {
-				_connection = null;
+				delete _headers[CONNECTION];
 			}
 		}
 
@@ -66,6 +71,9 @@ package com.tilfin.airthttpd.server {
 				case 400:
 					_status = "400 Bad Request";
 					break;
+				case 401:
+					_status = "401 Unauthorized";
+					break;
 				case 403:
 					_status = "403 Forbidden";
 					break;
@@ -82,6 +90,11 @@ package com.tilfin.airthttpd.server {
 					_status = "500 Internal Server Error";
 					break;
 			}
+		}
+		
+		public function setBasicAuthentication(realm:String):void {
+			this.statusCode = 401;
+			_headers["WWW-Authenticate"] = 'Basic realm="' + realm + '"';
 		}
 
 		public function set body(data:*):void {
@@ -101,9 +114,10 @@ package com.tilfin.airthttpd.server {
 			header.push(VERSION + _status);
 			header.push("Date: " + DateUtil.toRFC822(new Date()));
 			header.push(SERVER);
-
-			if (_connection)
-				header.push(_connection);
+			
+			for (var name:String in _headers) {
+				header.push(name + ": " + _headers[name]);
+			}
 
 			if (_body) {
 				header.push("Content-Type: " + _contentType);
