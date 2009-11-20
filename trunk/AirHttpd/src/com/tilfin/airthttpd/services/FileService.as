@@ -6,6 +6,8 @@ package com.tilfin.airthttpd.services {
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
+	
+	import mx.utils.Base64Encoder;
 
 	/**
 	 * Local File output service.
@@ -32,6 +34,8 @@ package com.tilfin.airthttpd.services {
 		}
 
 		private var _docroot:String;
+		
+		private var _basicCredentials:String = null;
 
 		/**
 		 * Contructor
@@ -42,11 +46,27 @@ package com.tilfin.airthttpd.services {
 		public function FileService(docroot:File) {
 			_docroot = docroot.url;
 		}
+		
+		public function setBasicCredentials(user:String, pass:String):void {
+			var base64enc:Base64Encoder = new Base64Encoder();
+			base64enc.encode(user + ":" + pass);
+			_basicCredentials = base64enc.flush(); 
+		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function doService(request:HttpRequest, response:HttpResponse):void {
+			if (_basicCredentials) {
+				var auth:String = request.authorization;
+				if (!auth || auth.substr(0, 6) != "Basic " || auth.substr(6) != _basicCredentials) {
+					response.statusCode = 401;
+					response.setBasicAuthentication("File Auth");
+					response.body = "<html><body><h1>" + response.status + "</h1></body></html>";
+					return;
+				}
+			}
+			
 			var file:File = new File(_docroot + request.path);
 			
 			if (file.isDirectory) {
@@ -56,7 +76,7 @@ package com.tilfin.airthttpd.services {
 			
 			if (!file.exists) {
 				response.statusCode = 404;
-				response.body = "<html><body><h1>Not Found</h1></body></html>";
+				response.body = "<html><body><h1>" + response.status + "</h1></body></html>";
 				return;
 			}
 			
