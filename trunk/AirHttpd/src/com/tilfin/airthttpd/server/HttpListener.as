@@ -1,13 +1,16 @@
 package com.tilfin.airthttpd.server {
 	import com.tilfin.airthttpd.events.HandleEvent;
+	import com.tilfin.airthttpd.services.EmptyService;
 	import com.tilfin.airthttpd.services.IService;
-
+	
 	import flash.events.Event;
 	import flash.events.ServerSocketConnectEvent;
 	import flash.net.ServerSocket;
 
 	/**
-	 * HTTP Listening Server
+	 * HttpListener
+	 * 
+	 * provided HTTP server function based on ServerSocket.
 	 *
 	 * @author toshi
 	 *
@@ -22,8 +25,20 @@ package com.tilfin.airthttpd.server {
 
 		private var _logCallback:Function
 
+		/**
+		 * constructor.
+		 * 
+		 * @param logCallback
+		 *    spcified logging function.
+		 *		function(msg:String):void {
+		 * 			trace(msg);
+		 *		}
+		 * 
+		 */
 		public function HttpListener(logCallback:Function) {
 			_logCallback = logCallback;
+			
+			_service = new EmptyService();
 
 			_serverSocket = new ServerSocket();
 
@@ -31,10 +46,21 @@ package com.tilfin.airthttpd.server {
 			_serverSocket.addEventListener(Event.CLOSE, onClose);
 		}
 
+		/**
+		 * @param service
+		 * 		applying to HTTP service.
+		 */		
 		public function set service(service:IService):void {
 			_service = service;
 		}
 
+		/**
+		 * start listening server on port.
+		 * 
+		 * @param port
+		 * 		HTTP port number
+		 * 
+		 */
 		public function listen(port:int):void {
 			if (_serverSocket.listening) {
 				return;
@@ -46,6 +72,10 @@ package com.tilfin.airthttpd.server {
 			_serverSocket.listen();
 		}
 
+		/**
+		 * stop server. 
+		 * 
+		 */
 		public function shutdown():void {
 			if (!_serverSocket.listening) {
 				return;
@@ -87,23 +117,43 @@ package com.tilfin.airthttpd.server {
 		private function onHandle(event:HandleEvent):void {
 			var httpreq:HttpRequest = event.request;
 			var httpres:HttpResponse = event.response;
-
+			
+			if (httpreq.version != "HTTP/1.1" && httpreq.version != "HTTP/1.0") { 
+				httpres.statusCode = 505; // HTTP Version Not Supported
+				exitHandling(httpreq, httpres);
+				return;
+			}
+			
 			if (getMethodImplemented(httpreq.method)) {
 				if ((httpreq.method == "POST" || httpreq.method == "PUT") && isNaN(httpreq.contentLength)) {
 					httpres.statusCode = 411; // Length Required
-				} else {
-					_service.doService(httpreq, httpres);
+					exitHandling(httpreq, httpres);
+					return;
 				}
 			} else {
 				httpres.statusCode = 501; // Not Implemented
+				exitHandling(httpreq, httpres);
+				return;
 			}
-
+			
+			try {
+				_service.doService(httpreq, httpres);
+			} catch (error:Error) {
+				httpres.statusCode = 500; // Internal Server Error
+				trace("(500 Internal Server Error) " + error.message);
+			}
+			
+			exitHandling(httpreq, httpres);
+		}
+		
+		private function exitHandling(httpreq:HttpRequest, httpres:HttpResponse):void {
 			if (httpres.isBodyEmpty() && httpres.statusCode >= 400) {
 				// set Error Document HTML
 				httpres.body = getSimpleHtml(httpres.status);
 			}
 
 			_logCallback(httpreq.firstLine + " - " + httpres.status);
+			
 		}
 
 		private function getMethodImplemented(method:String):Boolean {

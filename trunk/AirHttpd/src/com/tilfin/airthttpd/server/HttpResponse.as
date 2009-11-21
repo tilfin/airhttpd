@@ -12,12 +12,12 @@ package com.tilfin.airthttpd.server {
 	 */
 	public class HttpResponse {
 
-		private static const SERVER:String = "Server: AirHttpd/0.0.1";
+		private static const SERVER:String = "Server: AirHttpd/0.1.0";
 		private static const NEWLINE:String = "\r\n";
 
 		private static const CONNECTION:String = "Connection";
 
-		private static const VERSION:String = "HTTP/1.x ";
+		private static const VERSION:String = "HTTP/1.1 ";
 
 		private var _socket:Socket;
 
@@ -113,6 +113,18 @@ package com.tilfin.airthttpd.server {
 				case 501:
 					_status = "501 Not Implemented";
 					break;
+				case 502:
+					_status = "502 Bad Gateway";
+					break;
+				case 503:
+					_status = "503 Service Unavailable";
+					break;
+				case 504:
+					_status = "504 Gateway Timeout";
+					break;
+				case 505:
+					_status = "505 HTTP Version Not Supported";
+					break;
 			}
 		}
 
@@ -154,7 +166,7 @@ package com.tilfin.airthttpd.server {
 		 * 		specifying whether HTTP method is "HEAD" or not.
 		 *
 		 */
-		public function flush(isHead:Boolean = false):void {
+		internal function flush(isHead:Boolean = false):void {
 			if (_hasDone)
 				return;
 
