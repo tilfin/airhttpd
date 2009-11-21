@@ -1,6 +1,7 @@
 package com.tilfin.airthttpd.services {
 	import com.tilfin.airthttpd.server.HttpRequest;
 	import com.tilfin.airthttpd.server.HttpResponse;
+	import com.tilfin.airthttpd.utils.DateUtil;
 	
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
@@ -118,6 +119,8 @@ package com.tilfin.airthttpd.services {
 			fs.close();
 
 			response.body = data;
+			response.setCookies([ "name=vcae", "sdfd=dsf" ]);
+			response.addHeader("Last-Modified", DateUtil.toRFC822(file.modificationDate));
 		}
 	}
 }

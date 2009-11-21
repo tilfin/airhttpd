@@ -27,6 +27,7 @@ package com.tilfin.airthttpd.server {
 		private var _contentType:String = "text/html";
 		private var _connection:String;
 		private var _keepalive:String;
+		private var _cookies:Array;
 		private var _headers:Object;
 
 		private var _body:ByteArray;
@@ -134,6 +135,10 @@ package com.tilfin.airthttpd.server {
 			_headers["Allow"] = methods is Array ? methods.join(", ") : String(methods);
 		}
 		
+		public function setCookies(cookies:Array):void {
+			_cookies = cookies;
+		}
+		
 		public function addHeader(name:String, value:String):void {
 			_headers[name] = value;
 		}
@@ -160,6 +165,10 @@ package com.tilfin.airthttpd.server {
 
 			for (var name:String in _headers) {
 				header.push(name + ": " + _headers[name]);
+			}
+			
+			for each (var cookie:String in _cookies) {
+				header.push("Set-Cookie: " + cookie);
 			}
 
 			if (_body) {
