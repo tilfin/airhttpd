@@ -14,6 +14,7 @@ package com.tilfin.airthttpd.server {
 		private var _path:String;
 		private var _version:String;
 
+		private var _queryStr:String;
 		private var _headers:Object;
 
 		private var _bytes:ByteArray;
@@ -25,6 +26,12 @@ package com.tilfin.airthttpd.server {
 			_path = req[1];
 			_version = req[2];
 			_headers = headers;
+			
+			var queryStartPos:int = _path.indexOf("?");
+			if (queryStartPos > -1) {
+				_queryStr = _path.substr(queryStartPos + 1);
+				_path = _path.substr(0, queryStartPos);
+			}
 		}
 
 		public function get firstLine():String {
@@ -41,6 +48,23 @@ package com.tilfin.airthttpd.server {
 
 		public function get version():String {
 			return _version;
+		}
+		
+		public function get queryString():String {
+			return _queryStr;
+		}
+		
+		public function get queryParams():Object {
+			if (!_queryStr)
+				return null;
+			
+			var params:Object = new Object();
+			var entries:Array = _queryStr.split("&");
+			for each (var entry:String in entries) {
+				var keyval:Array = entry.split("=");
+				params[keyval[0]] = decodeURIComponent(keyval[1]);
+			}
+			return params;
 		}
 
 		public function get headers():Object {

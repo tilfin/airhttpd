@@ -89,12 +89,17 @@ package com.tilfin.airthttpd.server {
 			var httpres:HttpResponse = event.response;
 
 			if (getMethodImplemented(httpreq.method)) {
-				_service.doService(httpreq, httpres);
+				if ((httpreq.method == "POST" || httpreq.method == "PUT") && isNaN(httpreq.contentLength)) {
+					httpres.statusCode = 411; // Length Required
+				} else {
+					_service.doService(httpreq, httpres);
+				}
 			} else {
 				httpres.statusCode = 501; // Not Implemented
 			}
-			
+
 			if (httpres.isBodyEmpty() && httpres.statusCode >= 400) {
+				// set Error Document HTML
 				httpres.body = getSimpleHtml(httpres.status);
 			}
 
