@@ -4,10 +4,10 @@ package com.tilfin.airthttpd.utils {
 
 	public class DateUtil {
 
-		private static var dayShortNames:Array = ["Jan", "Feb", "Mar",
+		private static var monthShortNames:Array = ["Jan", "Feb", "Mar",
 			"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-		private static var monthShortNames:Array = ["Sun", "Mon", "Tue",
+		private static var dayShortNames:Array = ["Sun", "Mon", "Tue",
 			"Wed", "Thu", "Fri", "Sat"];
 
 		/**
@@ -136,7 +136,7 @@ package com.tilfin.airthttpd.utils {
 
 			var arr:Array = new Array();
 
-			arr.push(monthShortNames[d.getUTCDay()] + ",");
+			arr.push(dayShortNames[d.getUTCDay()] + ",");
 			arr.push(date < 10 ? "0" + date : date);
 			arr.push(monthShortNames[d.getUTCMonth()]);
 			arr.push(d.getUTCFullYear());
