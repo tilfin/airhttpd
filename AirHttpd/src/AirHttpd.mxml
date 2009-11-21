@@ -2,6 +2,7 @@
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="620">
 	<mx:Script>
 		<![CDATA[
+			import com.tilfin.airthttpd.services.EmptyService;
 			import mx.controls.Alert;
 			import com.tilfin.airthttpd.services.FileService;
 			import com.tilfin.airthttpd.services.SampleService;
