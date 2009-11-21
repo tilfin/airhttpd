@@ -1,8 +1,0 @@
-#日本語によるサマリー
-
-= 紹介 =
-
-Add your content here.
-
-
-= 詳細 =
