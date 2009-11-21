@@ -119,7 +119,6 @@ package com.tilfin.airthttpd.services {
 			fs.close();
 
 			response.body = data;
-			response.setCookies([ "name=vcae", "sdfd=dsf" ]);
 			response.addHeader("Last-Modified", DateUtil.toRFC822(file.modificationDate));
 		}
 	}
