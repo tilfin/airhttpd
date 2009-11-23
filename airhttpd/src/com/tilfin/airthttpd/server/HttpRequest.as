@@ -1,4 +1,6 @@
 package com.tilfin.airthttpd.server {
+	import com.tilfin.airthttpd.utils.ParamUtil;
+	
 	import flash.utils.ByteArray;
 
 	/**
@@ -21,6 +23,10 @@ package com.tilfin.airthttpd.server {
 
 		public function HttpRequest(request:String, headers:Object):void {
 			var req:Array = request.split(" ", 3);
+			if (req.length != 3 || String(req[0]).length < 3) {
+				throw new ArgumentError();
+			}
+			
 			_firstLine = request;
 			_method = req[0];
 			_path = req[1];
@@ -58,13 +64,7 @@ package com.tilfin.airthttpd.server {
 			if (!_queryStr)
 				return null;
 			
-			var params:Object = new Object();
-			var entries:Array = _queryStr.split("&");
-			for each (var entry:String in entries) {
-				var keyval:Array = entry.split("=");
-				params[keyval[0]] = decodeURIComponent(keyval[1]);
-			}
-			return params;
+			return ParamUtil.deserialize(_queryStr);
 		}
 
 		public function get headers():Object {
@@ -101,6 +101,10 @@ package com.tilfin.airthttpd.server {
 
 		public function get contentLength():Number {
 			return parseInt(_headers["content-length"], 10);
+		}
+		
+		public function get contentType():String {
+			return _headers["content-type"];
 		}
 		
 		public function get authorization():String {

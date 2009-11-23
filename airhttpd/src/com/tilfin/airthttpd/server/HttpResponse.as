@@ -30,6 +30,7 @@ package com.tilfin.airthttpd.server {
 		private var _cookies:Array;
 		private var _headers:Object;
 
+		private var _location:String;
 		private var _body:ByteArray;
 
 		private var _hasDone:Boolean = false;
@@ -107,6 +108,9 @@ package com.tilfin.airthttpd.server {
 				case 411:
 					_status = "411 Required Length";
 					break;
+				case 414:
+					_status = "414 Request-URI Too Long";
+					break;
 				case 500:
 					_status = "500 Internal Server Error";
 					break;
@@ -126,6 +130,20 @@ package com.tilfin.airthttpd.server {
 					_status = "505 HTTP Version Not Supported";
 					break;
 			}
+		}
+		
+		/**
+		 * @return URL is value at Location Header.
+		 */
+		public function get location():String {
+			return _location;
+		}
+
+		/**
+		 * @private
+		 */		
+		public function set location(value:String):void {
+			_location = value;
 		}
 
 		public function set body(data:*):void {
@@ -178,11 +196,15 @@ package com.tilfin.airthttpd.server {
 			for (var name:String in _headers) {
 				header.push(name + ": " + _headers[name]);
 			}
+
+			if (_location) {
+				header.push("Location: " + _location);
+			}
 			
 			for each (var cookie:String in _cookies) {
 				header.push("Set-Cookie: " + cookie);
 			}
-
+			
 			if (_body) {
 				header.push("Content-Type: " + _contentType);
 				header.push("Content-Length: " + _body.length.toString());
