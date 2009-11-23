@@ -1,12 +1,12 @@
 package com.tilfin.airthttpd.server {
 	import com.tilfin.airthttpd.events.HandleEvent;
-
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.ProgressEvent;
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
-
+	
 	import mx.utils.StringUtil;
 
 	[Event(type="com.tilfin.airhttpd.events.HandleEvent", name="handle")]
@@ -36,7 +36,21 @@ package com.tilfin.airthttpd.server {
 
 		private function onSocketData(event:ProgressEvent):void {
 			_socket.readBytes(_reqbuf, _reqbuf.length, _socket.bytesAvailable);
-			fetchRequestStream();
+
+			try {
+				fetchRequestStream();
+			} catch (err:Error) {
+				// failed to analyze HTTP Request.
+				var httpres:HttpResponse = new HttpResponse(_socket);
+				httpres.connection = "close";
+				httpres.statusCode = 400;
+				httpres.contentType = "text/plain";
+				httpres.body = "";
+				httpres.flush();
+				
+				// force to close connection.
+				dispose();
+			}
 		}
 
 		private function fetchRequestStream():void {
@@ -64,6 +78,11 @@ package com.tilfin.airthttpd.server {
 
 					if (_reqbuf.length == 0)
 						return;
+				}
+				
+				if (_reqbuf.length > 8192) {
+					// Request header size too large.
+					throw new Error();
 				}
 
 				var bufstr:String = _reqbuf.toString();

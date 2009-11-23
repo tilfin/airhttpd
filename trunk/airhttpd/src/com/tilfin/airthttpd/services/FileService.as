@@ -117,7 +117,7 @@ package com.tilfin.airthttpd.services {
 
 		private function setRedirect(response:HttpResponse, location:String):void {
 			response.statusCode = 301;
-			response.addHeader("Location", location);
+			response.location = location;
 			response.body = '<html><head><title>' + response.status + '</title></head><body><h1>' + response.status + '</h1><p>The resource has moved <a href="' + location + '">here</a>.</p></body></html>';
 		}
 
