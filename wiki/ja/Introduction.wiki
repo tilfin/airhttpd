@@ -1,0 +1,17 @@
+#summary introduction of airhttpd
+#labels Featured
+
+=概要=
+airhttpd は Adobe AIR 2.0 SDK から提供された ServerSocket をベースに実装した HTTP サーバです。
+HTTP バージョン 1.1 を部分的に実装しています。
+
+==実装==
+ * HTTP メソッドは GET, HEAD, POST, PUT, DELETE をサポート
+ * ベーシック認証をサポート
+ * Keep-Alive をサポート 
+
+==未実装==
+ * パイプライン処理
+ * チャンク通信
+ * HTTPS.
+ * 仮想ホスト切り替え 
