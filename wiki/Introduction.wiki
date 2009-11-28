@@ -14,3 +14,17 @@ airhttpd is a simple HTTP server, based on Adobe AIR 2.0 (public beta). This fun
  * Chunked transfer encoding.
  * HTTPS.
  * Virtual hosting. 
+ 
+
+=How to use=
+
+==Simple web server==
+{{{
+  var listener:HttpListener = new HttpListener(function(message:String):void {
+				logTextArea.text += message + "\n";
+			};
+  
+  listener.service = new FileService(new File("C:\Web\root");
+  listener.listen(8080);
+}}}
+

@@ -14,4 +14,19 @@ HTTP バージョン 1.1 を部分的に実装しています。
  * パイプライン処理
  * チャンク通信
  * HTTPS.
- * 仮想ホスト切り替え 
+ * 仮想ホスト切り替え
+ 
+
+=使い方=
+
+==シンプルな Web サーバ==
+{{{
+  var listener:HttpListener = new HttpListener(function(message:String):void {
+				logTextArea.text += message + "\n";
+			};
+  
+  listener.service = new FileService(new File("C:\Web\root");
+  listener.listen(8080);
+}}}
+
+ 
