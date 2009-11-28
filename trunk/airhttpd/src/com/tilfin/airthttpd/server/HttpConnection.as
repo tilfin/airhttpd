@@ -1,4 +1,5 @@
 package com.tilfin.airthttpd.server {
+	import com.tilfin.airthttpd.events.BlockResponseSignal;
 	import com.tilfin.airthttpd.events.HandleEvent;
 	
 	import flash.events.Event;
@@ -31,6 +32,8 @@ package com.tilfin.airthttpd.server {
 		}
 
 		private function onClose(event:Event):void {
+			dispose();
+			
 			dispatchEvent(event);
 		}
 
@@ -47,7 +50,7 @@ package com.tilfin.airthttpd.server {
 				httpres.contentType = "text/plain";
 				httpres.body = "";
 				httpres.flush();
-				
+
 				// force to close connection.
 				dispose();
 			}
@@ -79,7 +82,7 @@ package com.tilfin.airthttpd.server {
 					if (_reqbuf.length == 0)
 						return;
 				}
-				
+
 				if (_reqbuf.length > 8192) {
 					// Request header size too large.
 					throw new Error();
@@ -126,7 +129,7 @@ package com.tilfin.airthttpd.server {
 		}
 
 		private function handleRequest(httpreq:HttpRequest):void {
-			var httpres:HttpResponse = new HttpResponse(_socket);
+			var httpres:HttpResponse = new HttpResponse(_socket, httpreq);
 			httpres.connection = httpreq.connection;
 
 			var evt:HandleEvent = new HandleEvent();
@@ -135,20 +138,15 @@ package com.tilfin.airthttpd.server {
 			evt.response = httpres;
 
 			dispatchEvent(evt);
-
-			httpres.flush(httpreq.method == "HEAD");
-
-			if (httpreq.connection == "close") {
-				dispose();
-			}
 		}
 
 		public function dispose():void {
 			_httpreq = null;
 			_reqbuf = null;
 
-			if (_socket)
+			if (_socket && _socket.connected) {
 				_socket.close();
+			}
 			_socket = null;
 		}
 	}

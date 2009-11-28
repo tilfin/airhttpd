@@ -4,8 +4,10 @@
 <classEntry path="com.tilfin.airthttpd.services.IService"/>
 <classEntry path="com.tilfin.airthttpd.server.HttpRequest"/>
 <classEntry path="com.tilfin.airthttpd.utils.JsonUtil"/>
+<classEntry path="com.tilfin.airthttpd.comet.CometCastProvider"/>
 <classEntry path="com.tilfin.airthttpd.server.HttpResponse"/>
 <classEntry path="com.tilfin.airthttpd.utils.ParamUtil"/>
+<classEntry path="com.tilfin.airthttpd.utils.EntityUtil"/>
 <classEntry path="com.tilfin.airthttpd.server.HttpConnection"/>
 <classEntry path="com.tilfin.airthttpd.utils.DateUtil"/>
 <classEntry path="com.tilfin.airthttpd.services.FileService"/>

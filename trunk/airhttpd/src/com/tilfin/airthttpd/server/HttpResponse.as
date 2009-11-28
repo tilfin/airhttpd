@@ -20,6 +20,7 @@ package com.tilfin.airthttpd.server {
 		private static const VERSION:String = "HTTP/1.1 ";
 
 		private var _socket:Socket;
+		private var _httpreq:HttpRequest;
 
 		private var _statusCode:int = 200;
 		private var _status:String = "200 OK";
@@ -34,11 +35,17 @@ package com.tilfin.airthttpd.server {
 		private var _body:ByteArray;
 
 		private var _hasDone:Boolean = false;
+		private var _comet:Boolean = false;
 
-		public function HttpResponse(socket:Socket) {
+		public function HttpResponse(socket:Socket, httpreq:HttpRequest = null) {
 			_socket = socket;
+			_httpreq = httpreq;
 
 			_headers = new Object();
+		}
+		
+		public function get httpRequest():HttpRequest {
+			return _httpreq;
 		}
 
 		public function set connection(value:String):void {
@@ -47,6 +54,10 @@ package com.tilfin.airthttpd.server {
 			} else {
 				delete _headers[CONNECTION];
 			}
+		}
+		
+		public function get contentType():String {
+			return _contentType;
 		}
 
 		public function set contentType(value:String):void {
@@ -141,7 +152,7 @@ package com.tilfin.airthttpd.server {
 
 		/**
 		 * @private
-		 */		
+		 */
 		public function set location(value:String):void {
 			_location = value;
 		}
@@ -176,18 +187,54 @@ package com.tilfin.airthttpd.server {
 		public function isBodyEmpty():Boolean {
 			return (_body == null);
 		}
+		
+		/**
+		 * @return speciflying whether process has done or not.
+		 */
+		public function get hasDone():Boolean {
+			return _hasDone;
+		}
+		
+		/**
+		 * @return speciflying Comet Mode.
+		 */
+		public function get comet():Boolean {
+			return _comet;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set comet(value:Boolean):void {
+			_comet = true;
+		}
+		
+		//===< for comet >=======================
+		
+		internal var exitHandlingCallback:Function;
+		
+		/**
+		 * do exiting process for comet. 
+		 * 
+		 */
+		public function completeComet():void {
+			if (_comet) {
+				exitHandlingCallback(this);
+				flush();
+				_comet = false;
+			}
+		}
+		
+		//===</ for comet >=======================
 
 		/**
 		 * output HTTP response.
 		 *
-		 * @param isHead
-		 * 		specifying whether HTTP method is "HEAD" or not.
-		 *
 		 */
-		internal function flush(isHead:Boolean = false):void {
+		internal function flush():void {
 			if (_hasDone)
 				return;
-
+			
 			var header:Array = new Array();
 			header.push(VERSION + _status);
 			header.push("Date: " + DateUtil.toRFC822(new Date()));
@@ -213,13 +260,18 @@ package com.tilfin.airthttpd.server {
 			_socket.writeUTFBytes(header.join(NEWLINE));
 			_socket.writeUTFBytes(NEWLINE + NEWLINE);
 
-			if (!isHead && _body) {
+			if ((_httpreq == null || _httpreq.method != "HEAD") && _body) {
 				_socket.writeBytes(_body);
 			}
 
 			_socket.flush();
 
 			_hasDone = true;
+			
+			if (_httpreq.connection == "close") {
+				_socket.close();
+				_socket = null;
+			}
 		}
 	}
 }

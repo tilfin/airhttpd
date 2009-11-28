@@ -21,6 +21,13 @@ package com.tilfin.airthttpd.server {
 
 		private var _bytes:ByteArray;
 
+		/**
+		 * contructor.
+		 *  
+		 * @param request first line of request
+		 * @param headers request header map
+		 * 
+		 */
 		public function HttpRequest(request:String, headers:Object):void {
 			var req:Array = request.split(" ", 3);
 			if (req.length != 3 || String(req[0]).length < 3) {
@@ -40,26 +47,50 @@ package com.tilfin.airthttpd.server {
 			}
 		}
 
+		/**
+		 * @return first line of request header  
+		 * 
+		 */
 		public function get firstLine():String {
 			return _firstLine;
 		}
 		
+		/**
+		 * @return method 
+		 * 
+		 */
 		public function get method():String {
 			return _method;
 		}
 
+		/**
+		 * @return requesting path 
+		 * 
+		 */
 		public function get path():String {
 			return _path;
 		}
 
+		/**
+		 * @return HTTP version 
+		 * 
+		 */
 		public function get version():String {
 			return _version;
 		}
 		
+		/**
+		 * @return query string 
+		 * 
+		 */
 		public function get queryString():String {
 			return _queryStr;
 		}
 		
+		/**
+		 * @return map AS plain object parsed from query string  
+		 * 
+		 */
 		public function get queryParams():Object {
 			if (!_queryStr)
 				return null;
@@ -67,10 +98,18 @@ package com.tilfin.airthttpd.server {
 			return ParamUtil.deserialize(_queryStr);
 		}
 
+		/**
+		 * @return header map 
+		 * 
+		 */
 		public function get headers():Object {
 			return _headers;
 		}
 
+		/**
+		 * @return destination host name 
+		 * 
+		 */
 		public function get host():String {
 			return _headers.host;
 		}
@@ -79,6 +118,10 @@ package com.tilfin.airthttpd.server {
 			return _headers["accept-language"];
 		}
 
+		/**
+		 * @return connection header value 
+		 * 
+		 */
 		public function get connection():String {
 			if (_headers.hasOwnProperty("connection")) {
 				return String(_headers["connection"]).toLowerCase();
@@ -87,14 +130,26 @@ package com.tilfin.airthttpd.server {
 			}
 		}
 
+		/**
+		 * @return referer URL 
+		 * 
+		 */
 		public function get referer():String {
 			return _headers.referer;
 		}
 
+		/**
+		 * @return cookie 
+		 * 
+		 */
 		public function get cookie():String {
 			return _headers.cookie;
 		}
 
+		/**
+		 * @return user agent of web client 
+		 * 
+		 */
 		public function get userAgent():String {
 			return _headers["user-agent"];
 		}
@@ -103,14 +158,26 @@ package com.tilfin.airthttpd.server {
 			return parseInt(_headers["content-length"], 10);
 		}
 		
+		/**
+		 * @return content type of entity 
+		 * 
+		 */
 		public function get contentType():String {
 			return _headers["content-type"];
 		}
 		
+		/**
+		 * @return authrozation header 
+		 * 
+		 */
 		public function get authorization():String {
 			return _headers["authorization"];
 		}
 
+		/**
+		 * @return entity 
+		 * 
+		 */
 		public function get requestBody():ByteArray {
 			return _bytes;
 		}
