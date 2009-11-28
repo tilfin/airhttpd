@@ -1,17 +1,17 @@
 #summary introduction of airhttpd
 #labels Featured
 
-=ŠT—v=
-airhttpd ‚Í Adobe AIR 2.0 SDK ‚©‚ç’ñ‹Ÿ‚³‚ê‚½ ServerSocket ‚ðƒx[ƒX‚ÉŽÀ‘•‚µ‚½ HTTP ƒT[ƒo‚Å‚·B
-HTTP ƒo[ƒWƒ‡ƒ“ 1.1 ‚ð•”•ª“I‚ÉŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
+=æ¦‚è¦=
+airhttpd ã¯ Adobe AIR 2.0 SDK ã‹ã‚‰æä¾›ã•ã‚ŒãŸ ServerSocket ã‚’ãƒ™ãƒ¼ã‚¹ã«å®Ÿè£…ã—ãŸ HTTP ã‚µãƒ¼ãƒã§ã™ã€‚
+HTTP ãƒãƒ¼ã‚¸ãƒ§ãƒ³ 1.1 ã‚’éƒ¨åˆ†çš„ã«å®Ÿè£…ã—ã¦ã„ã¾ã™ã€‚
 
-==ŽÀ‘•==
- * HTTP ƒƒ\ƒbƒh‚Í GET, HEAD, POST, PUT, DELETE ‚ðƒTƒ|[ƒg
- * ƒx[ƒVƒbƒN”FØ‚ðƒTƒ|[ƒg
- * Keep-Alive ‚ðƒTƒ|[ƒg 
+==å®Ÿè£…==
+ * HTTP ãƒ¡ã‚½ãƒƒãƒ‰ã¯ GET, HEAD, POST, PUT, DELETE ã‚’ã‚µãƒãƒ¼ãƒˆ
+ * ãƒ™ãƒ¼ã‚·ãƒƒã‚¯èªè¨¼ã‚’ã‚µãƒãƒ¼ãƒˆ
+ * Keep-Alive ã‚’ã‚µãƒãƒ¼ãƒˆ 
 
-==–¢ŽÀ‘•==
- * ƒpƒCƒvƒ‰ƒCƒ“ˆ—
- * ƒ`ƒƒƒ“ƒN’ÊM
+==æœªå®Ÿè£…==
+ * ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³å‡¦ç†
+ * ãƒãƒ£ãƒ³ã‚¯é€šä¿¡
  * HTTPS.
- * ‰¼‘zƒzƒXƒgØ‚è‘Ö‚¦ 
+ * ä»®æƒ³ãƒ›ã‚¹ãƒˆåˆ‡ã‚Šæ›¿ãˆ 
