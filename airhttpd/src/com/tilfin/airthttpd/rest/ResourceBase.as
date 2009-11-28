@@ -1,7 +1,19 @@
 package com.tilfin.airthttpd.rest {
-	import com.tilfin.airthttpd.rest.ClientError;
+	import com.tilfin.airthttpd.server.HttpRequest;
+	import com.tilfin.airthttpd.server.HttpResponse;
 
 	public class ResourceBase {
+		
+		internal var httpreq:HttpRequest;
+		internal var httpres:HttpResponse;
+		
+		protected function get request():HttpRequest {
+			return httpreq;
+		}
+
+		protected function get response():HttpResponse {
+			return httpres;
+		}
 		
 		public function index(params:Object):Object {
 			throw new ClientError(405); // Method Not Allowed

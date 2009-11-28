@@ -1,9 +1,20 @@
 package com.tilfin.airthttpd.utils {
 
+	/**
+	 * Utility class provides encoding and decoding of the JSON format.
+	 * 
+	 * @author tilfin
+	 */
 	public class JsonUtil {
-		
+
 		private static const ESCAPE_STR_PATTERN:RegExp = /("|\n|\\)/g;
 
+		/**
+		 * Encodes a object into a JSON string.
+		 *
+		 * @param data AS plain object
+		 * @return JSON string representing data
+		 */
 		public static function generate(data:Object):String {
 			if (data === null)
 				return "null";
@@ -44,7 +55,7 @@ package com.tilfin.airthttpd.utils {
 				}
 				return "{" + props.join(",") + "}";
 			}
-			
+
 			return null;
 		}
 	}

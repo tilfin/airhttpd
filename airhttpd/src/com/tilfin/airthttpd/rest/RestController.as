@@ -1,15 +1,12 @@
 package com.tilfin.airthttpd.rest {
 	import com.tilfin.airthttpd.server.HttpRequest;
 	import com.tilfin.airthttpd.server.HttpResponse;
-	import com.tilfin.airthttpd.utils.JsonUtil;
+	import com.tilfin.airthttpd.utils.EntityUtil;
 	import com.tilfin.airthttpd.utils.ParamUtil;
-	
-	import flash.xml.XMLDocument;
-	
-	import mx.rpc.xml.SimpleXMLDecoder;
-	import mx.rpc.xml.SimpleXMLEncoder;
 
 	public class RestController {
+
+		private static const PARAM_METHOD:String = "_method";
 
 		private var _mapping:Object;
 
@@ -20,7 +17,7 @@ package com.tilfin.airthttpd.rest {
 		public function RestController(container:ResourceContainer) {
 			_rescontainer = container;
 		}
-		
+
 		public function set responseType(value:String):void {
 			_responseType = value;
 		}
@@ -57,13 +54,26 @@ package com.tilfin.airthttpd.rest {
 		private function handleResourceMethod(resource:ResourceBase, id:String,
 			request:HttpRequest, response:HttpResponse):void {
 
+			var queryParams:Object = request.queryParams;
+			var method:String = request.method;
 			var body:Object = null;
 
-			if (request.method == "GET" || request.method == "HEAD") {
+			// Post replace
+			if (queryParams && queryParams.hasOwnProperty(PARAM_METHOD)) {
+				method = queryParams[PARAM_METHOD];
+				delete queryParams[PARAM_METHOD];
+			}
+
+			response.contentType = getResponseContentType();
+
+			resource.httpreq = request;
+			resource.httpres = response;
+
+			if (method == "GET" || method == "HEAD") {
 				if (id) {
-					body = resource.show(id, request.queryParams);
+					body = resource.show(id, queryParams);
 				} else {
-					body = resource.index(request.queryParams);
+					body = resource.index(queryParams);
 				}
 
 				if (body) {
@@ -72,8 +82,8 @@ package com.tilfin.airthttpd.rest {
 					response.statusCode = 404; // Not Found
 				}
 
-			} else if (request.method == "POST") {
-				body = resource.create(getRequestEntity(request), request.queryParams);
+			} else if (method == "POST") {
+				body = resource.create(getRequestEntity(request), queryParams);
 
 				if (response.location) {
 					response.statusCode = 201; // Created
@@ -83,8 +93,8 @@ package com.tilfin.airthttpd.rest {
 					response.statusCode = 204; // No Content
 				}
 
-			} else if (request.method == "PUT" && id) {
-				body = resource.update(id, getRequestEntity(request), request.queryParams);
+			} else if (method == "PUT" && id) {
+				body = resource.update(id, getRequestEntity(request), queryParams);
 
 				if (body) {
 					response.statusCode = 200; // OK
@@ -92,8 +102,9 @@ package com.tilfin.airthttpd.rest {
 					response.statusCode = 204; // No Content
 				}
 
-			} else if (request.method == "DELETE" && id) {
-				body = resource.destroy(id, getRequestEntity(request), request.queryParams);
+			} else if (method == "DELETE" && id) {
+				body = resource.destroy(id, getRequestEntity(request),
+					request.queryParams);
 
 				if (body) {
 					response.statusCode = 200; // OK
@@ -106,10 +117,10 @@ package com.tilfin.airthttpd.rest {
 			}
 
 			if (body) {
-				setResponseEntity(response, body);
+				response.body = EntityUtil.getEntityBody(response.contentType, body);
 			}
 		}
-		
+
 		private static const CONTENT_TYPE_PATTERN:RegExp = /^([a-z0-9\-]+)\/([a-z0-9\-]+);?(.*)$/
 
 		private function getRequestEntity(request:HttpRequest):Object {
@@ -118,27 +129,18 @@ package com.tilfin.airthttpd.rest {
 				return null;
 
 			var pos:int = ctntype.lastIndexOf("/");
-			
+
 			var result:Object = CONTENT_TYPE_PATTERN.exec(ctntype);
 			var type:String = result[2];
 
 			var bodystr:String = request.requestBody.toString();
 
 			if (type == "x-www-form-urlencoded") {
-				return ParamUtil.deserialize(bodystr);;
+				return ParamUtil.deserialize(bodystr);
 
 			} else if (type == "xml") {
-				var xmldoc:XMLDocument = new XMLDocument();
-				xmldoc.ignoreWhite = true;
-				try {
-					xmldoc.parseXML(bodystr);
-				} catch (parseError:Error) {
-					return false;
-				}
+				return EntityUtil.fromXml(bodystr);
 
-				var xmldecoder:SimpleXMLDecoder = new SimpleXMLDecoder(false);
-				return xmldecoder.decodeXML(xmldoc);
-				
 			} else if (type == "plain") {
 				return bodystr;
 			}
@@ -146,22 +148,13 @@ package com.tilfin.airthttpd.rest {
 			return null;
 		}
 
-		private function setResponseEntity(response:HttpResponse, entity:Object):void {
+		private function getResponseContentType():String {
 			if (_responseType == "xml") {
-				response.contentType = "application/xml";
-				
-				var xmldoc:XMLDocument = new XMLDocument();
-				var xmlencoder:SimpleXMLEncoder = new SimpleXMLEncoder(xmldoc);
-				xmlencoder.encodeValue(entity, new QName("root"), xmldoc);
-				response.body = xmldoc.toString();
-				
+				return "application/xml";
 			} else if (_responseType == "json") {
-				response.contentType = "application/json";
-				response.body = JsonUtil.generate(entity);
-				
+				return "application/json";
 			} else {
-				response.contentType = "text/plain";
-				response.body = entity.toString();
+				return "text/plain";
 			}
 		}
 	}

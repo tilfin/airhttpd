@@ -8,7 +8,7 @@ package com.tilfin.airthttpd.events {
 	/**
 	 * Handle Event dispatched when http request receives.
 	 *  
-	 * @author toshi
+	 * @author tilfin
 	 * 
 	 */
 	public class HandleEvent extends Event {
@@ -24,6 +24,5 @@ package com.tilfin.airthttpd.events {
 		public var request:HttpRequest;
 
 		public var response:HttpResponse;
-
 	}
 }
