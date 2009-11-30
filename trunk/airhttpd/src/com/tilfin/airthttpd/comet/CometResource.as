@@ -6,7 +6,7 @@ package com.tilfin.airthttpd.comet {
 	 * Resource for Comet.
 	 * 
 	 * @author tilfin
-	 * 
+	 * @private
 	 */
 	public class CometResource extends ResourceBase {
 		

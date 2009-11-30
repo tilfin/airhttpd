@@ -4,6 +4,12 @@ package com.tilfin.airthttpd.rest {
 	import com.tilfin.airthttpd.utils.EntityUtil;
 	import com.tilfin.airthttpd.utils.ParamUtil;
 
+	/**
+	 * Control class for RESTful request.
+	 * 
+	 * @author tilfin
+	 * @private 
+	 */
 	public class RestController {
 
 		private static const PARAM_METHOD:String = "_method";

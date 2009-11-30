@@ -6,6 +6,12 @@ package com.tilfin.airthttpd.services {
 	
 	import flash.filesystem.File;
 
+	/**
+	 * RESTful Service
+	 * 
+	 * @author tilfin
+	 * 
+	 */
 	public class RestService extends FileService {
 
 		private var _docroot:File;
@@ -27,7 +33,10 @@ package com.tilfin.airthttpd.services {
 
 			_docroot = docroot;
 		}
-
+		
+		/**
+		 * @inheritDoc
+		 */
 		override public function doService(request:HttpRequest, response:HttpResponse):void {
 			if (_controller.handleService(request, response)) {
 				return;
