@@ -10,10 +10,15 @@ package com.tilfin.airthttpd.services {
 	 */
 	public class SampleService implements IService {
 
+		/**
+		 * contructor
+		 */
 		public function SampleService() {
-			//TODO: implement function
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function doService(request:HttpRequest, response:HttpResponse):void {
 			response.body = "<html><head><title>SampleService" + "</title></head><body><table><tr><th>Method</th><td>"
 				+ request.method + "</td></tr><tr><th>Path</th><td>" + request.path + "</td></tr><tr><th>Host</th><td>"

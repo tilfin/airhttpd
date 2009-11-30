@@ -14,6 +14,14 @@ package com.tilfin.airthttpd.server {
 
 	[Event(type="flash.events.Event", name="close")]
 
+	/**
+	 * HTTP connection
+	 * 
+	 * adapted Keep-Alive.
+	 *  
+	 * @author tilfin
+	 * 
+	 */
 	public class HttpConnection extends EventDispatcher {
 		private static const HEADER_END:String = "\r\n\r\n";
 		private static const NEWLINE:String = "\r\n";
@@ -23,6 +31,13 @@ package com.tilfin.airthttpd.server {
 
 		private var _httpreq:HttpRequest;
 
+		/**
+		 * constructor.
+		 * 
+		 * @param socket
+		 * 			connected socket
+		 * 
+		 */
 		public function HttpConnection(socket:Socket) {
 			_socket = socket;
 			_reqbuf = new ByteArray();
@@ -140,6 +155,10 @@ package com.tilfin.airthttpd.server {
 			dispatchEvent(evt);
 		}
 
+		/**
+		 * destroy connection. 
+		 * 
+		 */
 		public function dispose():void {
 			_httpreq = null;
 			_reqbuf = null;

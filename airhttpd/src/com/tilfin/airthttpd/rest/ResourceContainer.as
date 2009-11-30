@@ -1,6 +1,12 @@
 package com.tilfin.airthttpd.rest {
 	import mx.events.ResizeEvent;
 
+	/**
+	 * Resource container
+	 * 
+	 * @author tilfin
+	 * @private
+	 */
 	public class ResourceContainer {
 
 		private var _container:Object;
