@@ -1,5 +1,5 @@
 package com.tilfin.airthttpd.server {
-	import com.tilfin.airthttpd.events.BlockResponseSignal;
+	import com.tilfin.airthttpd.errors.SocketError;
 	import com.tilfin.airthttpd.events.HandleEvent;
 	
 	import flash.events.Event;
@@ -45,7 +45,11 @@ package com.tilfin.airthttpd.server {
 			_socket.addEventListener(ProgressEvent.SOCKET_DATA, onSocketData);
 			_socket.addEventListener(Event.CLOSE, onClose);
 		}
-
+		
+		public function get socket():Socket {
+			return _socket;
+		}
+		
 		private function onClose(event:Event):void {
 			dispose();
 			
@@ -57,14 +61,23 @@ package com.tilfin.airthttpd.server {
 
 			try {
 				fetchRequestStream();
+				
+			} catch (socketerr:SocketError) {
+				dispose();
+				
 			} catch (err:Error) {
 				// failed to analyze HTTP Request.
-				var httpres:HttpResponse = new HttpResponse(_socket);
+				var httpres:HttpResponse = new HttpResponse(this);
 				httpres.connection = "close";
 				httpres.statusCode = 400;
 				httpres.contentType = "text/plain";
 				httpres.body = "";
-				httpres.flush();
+				
+				try {
+					httpres.flush();
+				} catch (err2:Error) {
+					trace(err2.message);
+				}
 
 				// force to close connection.
 				dispose();
@@ -144,7 +157,7 @@ package com.tilfin.airthttpd.server {
 		}
 
 		private function handleRequest(httpreq:HttpRequest):void {
-			var httpres:HttpResponse = new HttpResponse(_socket, httpreq);
+			var httpres:HttpResponse = new HttpResponse(this, httpreq);
 			httpres.connection = httpreq.connection;
 
 			var evt:HandleEvent = new HandleEvent();

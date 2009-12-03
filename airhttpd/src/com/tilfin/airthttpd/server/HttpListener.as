@@ -1,9 +1,10 @@
 package com.tilfin.airthttpd.server {
+	import com.tilfin.airthttpd.errors.SocketError;
 	import com.tilfin.airthttpd.events.BlockResponseSignal;
 	import com.tilfin.airthttpd.events.HandleEvent;
 	import com.tilfin.airthttpd.services.EmptyService;
 	import com.tilfin.airthttpd.services.IService;
-	
+
 	import flash.events.Event;
 	import flash.events.ServerSocketConnectEvent;
 	import flash.net.ServerSocket;
@@ -156,10 +157,21 @@ package com.tilfin.airthttpd.server {
 				httpres.contentType = "text/html";
 				httpres.body = getSimpleHtml(httpres.status);
 			}
-			
-			httpres.flush();
 
-			_logCallback(httpres.httpRequest.firstLine + " - " + httpres.status);
+			try {
+				httpres.flush();
+				_logCallback(httpres.httpRequest.firstLine + " - " + httpres.status);
+				
+			} catch (error:Error) {
+				if (error.errorID == 2002) {
+					// socket is dead.
+					_logCallback("Socket is dead. " + error.message);
+				} else {
+					_logCallback(error.message);
+				}
+				
+				httpres.httpConnection.dispose();
+			}
 		}
 
 		private function getMethodImplemented(method:String):Boolean {

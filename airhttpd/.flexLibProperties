@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <flexLibProperties version="1">
 <includeClasses>
-<classEntry path="com.tilfin.airthttpd.services.IService"/>
-<classEntry path="com.tilfin.airthttpd.server.HttpRequest"/>
-<classEntry path="com.tilfin.airthttpd.utils.JsonUtil"/>
 <classEntry path="com.tilfin.airthttpd.comet.CometCastProvider"/>
-<classEntry path="com.tilfin.airthttpd.server.HttpResponse"/>
-<classEntry path="com.tilfin.airthttpd.utils.ParamUtil"/>
-<classEntry path="com.tilfin.airthttpd.utils.EntityUtil"/>
-<classEntry path="com.tilfin.airthttpd.server.HttpConnection"/>
-<classEntry path="com.tilfin.airthttpd.utils.DateUtil"/>
-<classEntry path="com.tilfin.airthttpd.services.FileService"/>
+<classEntry path="com.tilfin.airthttpd.comet.CometResource"/>
+<classEntry path="com.tilfin.airthttpd.errors.SocketError"/>
+<classEntry path="com.tilfin.airthttpd.events.BlockResponseSignal"/>
 <classEntry path="com.tilfin.airthttpd.events.HandleEvent"/>
-<classEntry path="com.tilfin.airthttpd.services.RestService"/>
-<classEntry path="com.tilfin.airthttpd.services.EmptyService"/>
-<classEntry path="com.tilfin.airthttpd.services.SampleService"/>
+<classEntry path="com.tilfin.airthttpd.rest.ClientError"/>
+<classEntry path="com.tilfin.airthttpd.rest.ResourceBase"/>
+<classEntry path="com.tilfin.airthttpd.rest.ResourceContainer"/>
+<classEntry path="com.tilfin.airthttpd.rest.RestController"/>
+<classEntry path="com.tilfin.airthttpd.server.HttpConnection"/>
 <classEntry path="com.tilfin.airthttpd.server.HttpListener"/>
+<classEntry path="com.tilfin.airthttpd.server.HttpRequest"/>
+<classEntry path="com.tilfin.airthttpd.server.HttpResponse"/>
+<classEntry path="com.tilfin.airthttpd.services.EmptyService"/>
+<classEntry path="com.tilfin.airthttpd.services.FileService"/>
+<classEntry path="com.tilfin.airthttpd.services.IService"/>
+<classEntry path="com.tilfin.airthttpd.services.RestService"/>
+<classEntry path="com.tilfin.airthttpd.services.SampleService"/>
+<classEntry path="com.tilfin.airthttpd.utils.DateUtil"/>
+<classEntry path="com.tilfin.airthttpd.utils.EntityUtil"/>
+<classEntry path="com.tilfin.airthttpd.utils.JsonUtil"/>
+<classEntry path="com.tilfin.airthttpd.utils.ParamUtil"/>
 </includeClasses>
 <includeResources/>
 <namespaceManifests/>

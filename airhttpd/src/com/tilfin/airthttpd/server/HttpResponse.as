@@ -1,4 +1,5 @@
 package com.tilfin.airthttpd.server {
+	import com.tilfin.airthttpd.errors.SocketError;
 	import com.tilfin.airthttpd.utils.DateUtil;
 	
 	import flash.net.Socket;
@@ -19,7 +20,7 @@ package com.tilfin.airthttpd.server {
 
 		private static const VERSION:String = "HTTP/1.1 ";
 
-		private var _socket:Socket;
+		private var _httpconn:HttpConnection;
 		private var _httpreq:HttpRequest;
 
 		private var _statusCode:int = 200;
@@ -37,8 +38,8 @@ package com.tilfin.airthttpd.server {
 		private var _hasDone:Boolean = false;
 		private var _comet:Boolean = false;
 
-		public function HttpResponse(socket:Socket, httpreq:HttpRequest = null) {
-			_socket = socket;
+		public function HttpResponse(httpconn:HttpConnection, httpreq:HttpRequest = null) {
+			_httpconn = httpconn;
 			_httpreq = httpreq;
 
 			_headers = new Object();
@@ -46,6 +47,10 @@ package com.tilfin.airthttpd.server {
 		
 		public function get httpRequest():HttpRequest {
 			return _httpreq;
+		}
+		
+		public function get httpConnection():HttpConnection {
+			return _httpconn;
 		}
 
 		public function set connection(value:String):void {
@@ -220,7 +225,6 @@ package com.tilfin.airthttpd.server {
 		public function completeComet():void {
 			if (_comet) {
 				exitHandlingCallback(this);
-				flush();
 				_comet = false;
 			}
 		}
@@ -257,20 +261,26 @@ package com.tilfin.airthttpd.server {
 				header.push("Content-Length: " + _body.length.toString());
 			}
 
-			_socket.writeUTFBytes(header.join(NEWLINE));
-			_socket.writeUTFBytes(NEWLINE + NEWLINE);
+
+			var skt:Socket = _httpconn.socket;
+			if (skt == null || !skt.connected) {
+				throw new SocketError();
+			}
+			
+			skt.writeUTFBytes(header.join(NEWLINE));
+			skt.writeUTFBytes(NEWLINE + NEWLINE);
 
 			if ((_httpreq == null || _httpreq.method != "HEAD") && _body) {
-				_socket.writeBytes(_body);
+				skt.writeBytes(_body);
 			}
 
-			_socket.flush();
+			skt.flush();
 
 			_hasDone = true;
 			
 			if (_httpreq.connection == "close") {
-				_socket.close();
-				_socket = null;
+				skt.close();
+				skt = null;
 			}
 		}
 	}
