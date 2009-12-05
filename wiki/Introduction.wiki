@@ -8,13 +8,16 @@ airhttpd is a simple HTTP server, based on Adobe AIR 2.0 (public beta). This fun
  * HTTP methods only GET, HEAD, POST, PUT and DELETE.
  * HTTP Authentication only Basic.
  * Keep-Alive processing. 
+ * partial GET. 
+
 
 ==No Implements==
  * Pipeline processing.
  * Chunked transfer encoding.
  * HTTPS.
  * Virtual hosting. 
- 
+ * ETag header.
+
 
 =How to use=
 
