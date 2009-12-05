@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="620" viewSourceURL="srcview/index.html">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.tilfin.airthttpd.services.FileService;
+			import com.tilfin.airthttpd.server.HttpListener;
+
+			private var listener:HttpListener;
+
+			private function logging(message:String):void {
+				logTextArea.text += message + "\n";
+			}
+
+			private function listen():void {
+				var docrootFile:File = new File(docrootTextInput.text);
+				if (!docrootFile.exists) {
+					Alert.show("docroot path is not found.");
+					return;
+				}
+
+				var service:FileService = new FileService(docrootFile);
+				service.autoIndex = true;
+				// the under line is to enable Basic Authentication.
+				//service.setBasicCredentials("admin", "pass");
+
+				listener = new HttpListener(logging);
+				listener.service = service;
+				listener.listen(parseInt(portTextInput.text, 10));
+				listenButton.enabled = false;
+				shutdownButton.enabled = true;
+			}
+
+			private function shutdown():void {
+				if (listener) {
+					listener.shutdown();
+					listener = null;
+					shutdownButton.enabled = false;
+					listenButton.enabled = true;
+				}
+			}
+
+			private function refer():void {
+				var dir:File = File.documentsDirectory;
+				dir.addEventListener(Event.SELECT, function(event:Event):void {
+						docrootTextInput.text = File(event.target).nativePath;
+					});
+				dir.browseForDirectory("Select 'Document Root' directory.");
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox width="100%" paddingTop="4">
+			<mx:FormItem indicatorGap="4" label="Port" labelWidth="30" width="90">
+				<mx:TextInput id="portTextInput" text="10080" restrict="0-9" width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem indicatorGap="4" label="Document Root" labelWidth="100" width="340">
+				<mx:HBox width="100%" horizontalGap="2">
+					<mx:TextInput id="docrootTextInput" text="C:\Web" width="100%"/>
+					<mx:Button id="docrootButton" label=".." click="refer()" width="40"/>
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:Button id="listenButton" label="Listen" click="listen()"/>
+			<mx:Button id="shutdownButton" label="Shutdown" click="shutdown()" enabled="false"/>
+		</mx:HBox>
+		<mx:TextArea id="logTextArea" width="100%" height="100%"/>
+	</mx:VBox>
+</mx:WindowedApplication>
