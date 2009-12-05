@@ -12,7 +12,7 @@ package com.tilfin.airthttpd.server {
 	 *
 	 */
 	public class HttpResponse {
-
+	
 		private static const SERVER:String = "Server: AirHttpd/0.1.0";
 		private static const NEWLINE:String = "\r\n";
 
@@ -28,6 +28,10 @@ package com.tilfin.airthttpd.server {
 
 		private var _contentType:String = "text/html";
 		private var _connection:String;
+		private var _rangeStart:int = -1;
+		private var _rangeEnd:int = -1;
+		private var _rangeSize:int = -1;
+		
 		private var _keepalive:String;
 		private var _cookies:Array;
 		private var _headers:Object;
@@ -44,11 +48,11 @@ package com.tilfin.airthttpd.server {
 
 			_headers = new Object();
 		}
-		
+
 		public function get httpRequest():HttpRequest {
 			return _httpreq;
 		}
-		
+
 		public function get httpConnection():HttpConnection {
 			return _httpconn;
 		}
@@ -60,7 +64,7 @@ package com.tilfin.airthttpd.server {
 				delete _headers[CONNECTION];
 			}
 		}
-		
+
 		public function get contentType():String {
 			return _contentType;
 		}
@@ -97,8 +101,14 @@ package com.tilfin.airthttpd.server {
 				case 204:
 					_status = "204 No Content";
 					break;
+				case 206:
+					_status = "206 Partial Content";
+					break;
 				case 301:
 					_status = "301 Moved Permanently";
+					break;
+				case 304:
+					_status = "304 Not Modified";
 					break;
 				case 400:
 					_status = "400 Bad Request";
@@ -147,7 +157,7 @@ package com.tilfin.airthttpd.server {
 					break;
 			}
 		}
-		
+
 		/**
 		 * @return URL is value at Location Header.
 		 */
@@ -180,11 +190,46 @@ package com.tilfin.airthttpd.server {
 			this.statusCode = 405;
 			_headers["Allow"] = methods is Array ? methods.join(", ") : String(methods);
 		}
-		
+
+		/**
+		 * set 'Set-Cookie' header value.
+		 * 
+		 * @param date
+		 * 		cookie data array
+		 * 
+		 */
 		public function setCookies(cookies:Array):void {
 			_cookies = cookies;
 		}
 		
+		/**
+		 * set Content-Range header.
+		 *  
+		 * @param start
+		 * 		start position
+		 * @param end
+		 * 		end position
+		 * @param size
+		 * 		real size of content.
+		 * 
+		 */
+		public function setContentRange(start:int, end:int, size:int):void {
+			_rangeStart = start;
+			_rangeEnd = end;
+			_rangeSize = size;
+		}
+		
+		/**
+		 * set 'Last-Modified' header value.
+		 * 
+		 * @param date
+		 * 		resource modified date
+		 * 
+		 */
+		public function setLastModified(date:Date):void {
+			_headers["Last-Modified"] = DateUtil.toRFC822(date);
+		}
+
 		public function addHeader(name:String, value:String):void {
 			_headers[name] = value;
 		}
@@ -192,35 +237,35 @@ package com.tilfin.airthttpd.server {
 		public function isBodyEmpty():Boolean {
 			return (_body == null);
 		}
-		
+
 		/**
 		 * @return speciflying whether process has done or not.
 		 */
 		public function get hasDone():Boolean {
 			return _hasDone;
 		}
-		
+
 		/**
 		 * @return speciflying Comet Mode.
 		 */
 		public function get comet():Boolean {
 			return _comet;
 		}
-		
+
 		/**
 		 * @private
 		 */
 		public function set comet(value:Boolean):void {
 			_comet = true;
 		}
-		
+
 		//===< for comet >=======================
-		
+
 		internal var exitHandlingCallback:Function;
-		
+
 		/**
-		 * do exiting process for comet. 
-		 * 
+		 * do exiting process for comet.
+		 *
 		 */
 		public function completeComet():void {
 			if (_comet) {
@@ -228,7 +273,7 @@ package com.tilfin.airthttpd.server {
 				_comet = false;
 			}
 		}
-		
+
 		//===</ for comet >=======================
 
 		/**
@@ -238,7 +283,7 @@ package com.tilfin.airthttpd.server {
 		internal function flush():void {
 			if (_hasDone)
 				return;
-			
+
 			var header:Array = new Array();
 			header.push(VERSION + _status);
 			header.push("Date: " + DateUtil.toRFC822(new Date()));
@@ -251,22 +296,27 @@ package com.tilfin.airthttpd.server {
 			if (_location) {
 				header.push("Location: " + _location);
 			}
-			
+
 			for each (var cookie:String in _cookies) {
 				header.push("Set-Cookie: " + cookie);
 			}
-			
-			if (_body) {
-				header.push("Content-Type: " + _contentType);
-				header.push("Content-Length: " + _body.length.toString());
-			}
 
+			if ( _body) {
+				if (_rangeSize > -1) {
+					header.push("Content-Range: bytes " + _rangeStart + "-" + _rangeEnd + "/" + _rangeSize);
+				}
+
+				header.push("Content-Length: " + _body.length.toString());
+				header.push("Content-Type: " + _contentType);
+			}
 
 			var skt:Socket = _httpconn.socket;
 			if (skt == null || !skt.connected) {
 				throw new SocketError();
 			}
 			
+			trace(header.join("\n"));
+
 			skt.writeUTFBytes(header.join(NEWLINE));
 			skt.writeUTFBytes(NEWLINE + NEWLINE);
 
@@ -277,7 +327,7 @@ package com.tilfin.airthttpd.server {
 			skt.flush();
 
 			_hasDone = true;
-			
+
 			if (_httpreq.connection == "close") {
 				skt.close();
 				skt = null;
