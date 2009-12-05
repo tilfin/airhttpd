@@ -140,8 +140,10 @@ package com.tilfin.airthttpd.server {
 		private function getHttpRequest(headerStr:String):HttpRequest {
 			var entries:Object = new Object();
 			var lines:Array = new Array();
-
+			
 			lines = headerStr.split(NEWLINE);
+			trace(lines.join("\n"));
+			
 			var request:String = lines.shift();
 
 			for each (var line:String in lines) {
