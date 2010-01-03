@@ -6,6 +6,7 @@ package com.tilfin.airthttpd.server {
 	import flash.events.EventDispatcher;
 	import flash.events.ProgressEvent;
 	import flash.net.Socket;
+	import flash.net.URLRequestMethod;
 	import flash.utils.ByteArray;
 	
 	import mx.utils.StringUtil;
@@ -129,7 +130,7 @@ package com.tilfin.airthttpd.server {
 				temp.writeBytes(_reqbuf, headerEndPos + 4);
 				_reqbuf = temp;
 
-				if (_httpreq.method == "GET" || !_httpreq.contentLength) {
+				if (_httpreq.method == URLRequestMethod.GET || !_httpreq.contentLength) {
 					// request without the body.
 					handleRequest(_httpreq);
 					_httpreq = null;

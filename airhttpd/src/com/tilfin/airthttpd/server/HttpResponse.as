@@ -3,6 +3,7 @@ package com.tilfin.airthttpd.server {
 	import com.tilfin.airthttpd.utils.DateUtil;
 	
 	import flash.net.Socket;
+	import flash.net.URLRequestMethod;
 	import flash.utils.ByteArray;
 
 	/**
@@ -320,7 +321,7 @@ package com.tilfin.airthttpd.server {
 			skt.writeUTFBytes(header.join(NEWLINE));
 			skt.writeUTFBytes(NEWLINE + NEWLINE);
 
-			if ((_httpreq == null || _httpreq.method != "HEAD") && _body) {
+			if ((_httpreq == null || _httpreq.method != URLRequestMethod.HEAD) && _body) {
 				skt.writeBytes(_body);
 			}
 
