@@ -1,13 +1,13 @@
 package com.tilfin.airthttpd.server {
-	import com.tilfin.airthttpd.errors.SocketError;
 	import com.tilfin.airthttpd.events.BlockResponseSignal;
 	import com.tilfin.airthttpd.events.HandleEvent;
 	import com.tilfin.airthttpd.services.EmptyService;
 	import com.tilfin.airthttpd.services.IService;
-
+	
 	import flash.events.Event;
 	import flash.events.ServerSocketConnectEvent;
 	import flash.net.ServerSocket;
+	import flash.net.URLRequestMethod;
 
 	/**
 	 * HttpListener
@@ -127,7 +127,8 @@ package com.tilfin.airthttpd.server {
 			}
 
 			if (getMethodImplemented(httpreq.method)) {
-				if ((httpreq.method == "POST" || httpreq.method == "PUT") && isNaN(httpreq.contentLength)) {
+				if ((httpreq.method == URLRequestMethod.POST || httpreq.method == URLRequestMethod.PUT)
+					&& isNaN(httpreq.contentLength)) {
 					httpres.statusCode = 411; // Length Required
 					exitHandling(httpres);
 					return;
@@ -176,11 +177,11 @@ package com.tilfin.airthttpd.server {
 
 		private function getMethodImplemented(method:String):Boolean {
 			switch (method) {
-				case "GET":
-				case "HEAD":
-				case "POST":
-				case "PUT":
-				case "DELETE":
+				case URLRequestMethod.GET:
+				case URLRequestMethod.POST:
+				case URLRequestMethod.PUT:
+				case URLRequestMethod.DELETE:
+				case URLRequestMethod.HEAD:
 					return true;
 				default:
 					return false;

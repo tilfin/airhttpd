@@ -3,6 +3,8 @@ package com.tilfin.airthttpd.rest {
 	import com.tilfin.airthttpd.server.HttpResponse;
 	import com.tilfin.airthttpd.utils.EntityUtil;
 	import com.tilfin.airthttpd.utils.ParamUtil;
+	
+	import flash.net.URLRequestMethod;
 
 	/**
 	 * Control class for RESTful request.
@@ -75,7 +77,7 @@ package com.tilfin.airthttpd.rest {
 			resource.httpreq = request;
 			resource.httpres = response;
 
-			if (method == "GET" || method == "HEAD") {
+			if (method == URLRequestMethod.GET || method == URLRequestMethod.HEAD) {
 				if (id) {
 					body = resource.show(id, queryParams);
 				} else {
@@ -88,7 +90,7 @@ package com.tilfin.airthttpd.rest {
 					response.statusCode = 404; // Not Found
 				}
 
-			} else if (method == "POST") {
+			} else if (method == URLRequestMethod.POST) {
 				body = resource.create(getRequestEntity(request), queryParams);
 
 				if (response.location) {
@@ -99,25 +101,31 @@ package com.tilfin.airthttpd.rest {
 					response.statusCode = 204; // No Content
 				}
 
-			} else if (method == "PUT" && id) {
-				body = resource.update(id, getRequestEntity(request), queryParams);
+			} else if (method == URLRequestMethod.PUT) {
+				if (id) { 
+					body = resource.update(id, getRequestEntity(request), queryParams);
 
-				if (body) {
-					response.statusCode = 200; // OK
+					if (body) {
+						response.statusCode = 200; // OK
+					} else {
+						response.statusCode = 204; // No Content
+					}
 				} else {
-					response.statusCode = 204; // No Content
+					response.statusCode = 404; // Not Found
 				}
+			} else if (method == URLRequestMethod.DELETE) {
+				if (id) { 
+					body = resource.destroy(id, getRequestEntity(request),
+						request.queryParams);
 
-			} else if (method == "DELETE" && id) {
-				body = resource.destroy(id, getRequestEntity(request),
-					request.queryParams);
-
-				if (body) {
-					response.statusCode = 200; // OK
+					if (body) {
+						response.statusCode = 200; // OK
+					} else {
+						response.statusCode = 204; // No Content
+					}
 				} else {
-					response.statusCode = 204; // No Content
+					response.statusCode = 404; // Not Found
 				}
-
 			} else {
 				response.statusCode = 405; // Method Not Allowed
 			}
