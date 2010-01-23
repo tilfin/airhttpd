@@ -34,7 +34,7 @@ package com.tilfin.airthttpd.rest {
 		}
 		
 		public function loadMapping(map:Object):void {
-			var val:* = map[path];
+			var val:*;
 			var klass:Class;
 			var instance:ResourceBase;
 			
