@@ -1,5 +1,4 @@
 package com.tilfin.airthttpd.rest {
-	import mx.events.ResizeEvent;
 
 	/**
 	 * Resource container
