@@ -1,4 +1,6 @@
 package com.tilfin.airthttpd.server {
+	import __AS3__.vec.Vector;
+	
 	import com.tilfin.airthttpd.events.BlockResponseSignal;
 	import com.tilfin.airthttpd.events.HandleEvent;
 	import com.tilfin.airthttpd.services.EmptyService;
@@ -21,7 +23,7 @@ package com.tilfin.airthttpd.server {
 
 		private var _serverSocket:ServerSocket;
 
-		private var _connections:Array;
+		private var _connections:Vector.<HttpConnection>;
 
 		private var _service:IService;
 
@@ -68,7 +70,7 @@ package com.tilfin.airthttpd.server {
 				return;
 			}
 
-			_connections = new Array();
+			_connections = new Vector.<HttpConnection>();
 
 			_serverSocket.bind(port);
 			_serverSocket.listen();
