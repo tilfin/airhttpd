@@ -6,6 +6,7 @@ package com.tilfin.airthttpd.services {
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.net.URLRequestMethod;
 	import flash.utils.ByteArray;
 	
 	import mx.graphics.codec.PNGEncoder;
@@ -59,8 +60,10 @@ package com.tilfin.airthttpd.services {
 		 *
 		 */
 		public function FileService(docroot:File) {
-			_docroot = docroot.url;
-			_directoryIndex = DIRECTORY_INDEX;
+			if (docroot) {
+				_docroot = docroot.url;
+				_directoryIndex = DIRECTORY_INDEX;
+			}
 		}
 		
 		/**
@@ -100,7 +103,7 @@ package com.tilfin.airthttpd.services {
 		 * @inheritDoc
 		 */
 		public function doService(request:HttpRequest, response:HttpResponse):void {
-			if (request.method != "GET" && request.method != "HEAD") {
+			if (request.method != URLRequestMethod.GET && request.method != URLRequestMethod.HEAD) {
 				response.setAllowMethods("GET, HEAD");
 				return;
 			}
@@ -222,7 +225,7 @@ package com.tilfin.airthttpd.services {
 
 		private function findDefaultPage(dirurl:String):File {
 			for each (var page:String in _directoryIndex) {
-				var file:File = new File(dirurl + "/index.html");
+				var file:File = new File(dirurl + "/" + page);
 				if (file.exists) {
 					return file;
 				}
