@@ -3,6 +3,7 @@
 	<name>AirHttpdSample</name>
 	<comment></comment>
 	<projects>
+		<project>airhttpd</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
