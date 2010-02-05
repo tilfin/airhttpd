@@ -144,7 +144,7 @@ package com.tilfin.airthttpd.server {
 		 *
 		 */
 		public function get referer():String {
-			return _headers.referer;
+			return _headers.hasOwnProperty("referer") ? _headers.referer : null;
 		}
 
 		/**
@@ -160,7 +160,8 @@ package com.tilfin.airthttpd.server {
 		 *
 		 */
 		public function get userAgent():String {
-			return _headers["user-agent"];
+			var ua:String = _headers["user-agent"];
+			return ua ? ua : "";
 		}
 
 		/**

@@ -1,16 +1,18 @@
 package com.tilfin.airthttpd.server {
 	import __AS3__.vec.Vector;
-	
+
 	import com.tilfin.airthttpd.events.BlockResponseSignal;
 	import com.tilfin.airthttpd.events.HandleEvent;
 	import com.tilfin.airthttpd.services.EmptyService;
 	import com.tilfin.airthttpd.services.IService;
-	
+	import com.tilfin.airthttpd.utils.DateUtil;
+
 	import flash.events.Event;
 	import flash.events.ServerSocketConnectEvent;
 	import flash.net.ServerSocket;
+	import flash.net.Socket;
 	import flash.net.URLRequestMethod;
-	
+
 	import mx.logging.ILogger;
 	import mx.logging.Log;
 
@@ -25,7 +27,7 @@ package com.tilfin.airthttpd.server {
 	public class HttpListener {
 
 		private static var log:ILogger = Log.getLogger("com.tilfin.airthttpd.server.HttpListener");
-		
+
 		private var _serverSocket:ServerSocket;
 
 		private var _connections:Vector.<HttpConnection>;
@@ -129,20 +131,19 @@ package com.tilfin.airthttpd.server {
 
 			if (httpreq.version != "HTTP/1.1" && httpreq.version != "HTTP/1.0") {
 				httpres.statusCode = 505; // HTTP Version Not Supported
-				exitHandling(httpres);
+				exitHandling(event.socket, httpres);
 				return;
 			}
 
 			if (getMethodImplemented(httpreq.method)) {
-				if ((httpreq.method == URLRequestMethod.POST || httpreq.method == URLRequestMethod.PUT)
-					&& isNaN(httpreq.contentLength)) {
+				if ((httpreq.method == URLRequestMethod.POST || httpreq.method == URLRequestMethod.PUT) && isNaN(httpreq.contentLength)) {
 					httpres.statusCode = 411; // Length Required
-					exitHandling(httpres);
+					exitHandling(event.socket, httpres);
 					return;
 				}
 			} else {
 				httpres.statusCode = 501; // Not Implemented
-				exitHandling(httpres);
+				exitHandling(event.socket, httpres);
 				return;
 			}
 
@@ -156,10 +157,10 @@ package com.tilfin.airthttpd.server {
 				log.error("(500 Internal Server Error) " + error.message);
 			}
 
-			exitHandling(httpres);
+			exitHandling(event.socket, httpres);
 		}
 
-		private function exitHandling(httpres:HttpResponse):void {
+		private function exitHandling(socket:Socket, httpres:HttpResponse):void {
 			if (httpres.isBodyEmpty() && httpres.statusCode >= 400) {
 				// set Error Document HTML
 				httpres.contentType = "text/html";
@@ -168,8 +169,8 @@ package com.tilfin.airthttpd.server {
 
 			try {
 				httpres.flush();
-				_logCallback(httpres.httpRequest.firstLine + " - " + httpres.status);
-				
+				putAccessLogInfo(socket, httpres.httpRequest, httpres);
+
 			} catch (error:Error) {
 				if (error.errorID == 2002) {
 					// socket is dead.
@@ -177,7 +178,7 @@ package com.tilfin.airthttpd.server {
 				} else {
 					log.error(error.message);
 				}
-				
+
 				httpres.httpConnection.dispose();
 			}
 		}
@@ -197,6 +198,28 @@ package com.tilfin.airthttpd.server {
 
 		private function getSimpleHtml(status:String):String {
 			return "<html><body><h1>" + status + "</h1></body></html>";
+		}
+
+		private static const QUOT:String = '"';
+
+		private function putAccessLogInfo(socket:Socket, httpreq:HttpRequest,
+			httpres:HttpResponse):void {
+			var logfields:Array = [socket.remoteAddress, '-', '-'];
+			logfields.push("[" + DateUtil.toAccessLog() + "]");
+			logfields.push(QUOT + httpreq.firstLine + QUOT);
+			logfields.push(httpres.statusCode.toString());
+			logfields.push(httpres.contentLength);
+
+			var referer:String = httpreq.referer;
+			if (referer) {
+				logfields.push(QUOT + referer + QUOT);
+			} else {
+				logfields.push('"-"');
+			}
+
+			logfields.push(QUOT + httpreq.userAgent + QUOT);
+
+			_logCallback(logfields.join(" "));
 		}
 
 	}
