@@ -10,6 +10,9 @@ package com.tilfin.airthttpd.server {
 	import flash.events.ServerSocketConnectEvent;
 	import flash.net.ServerSocket;
 	import flash.net.URLRequestMethod;
+	
+	import mx.logging.ILogger;
+	import mx.logging.Log;
 
 	/**
 	 * HttpListener
@@ -21,6 +24,8 @@ package com.tilfin.airthttpd.server {
 	 */
 	public class HttpListener {
 
+		private static var log:ILogger = Log.getLogger("com.tilfin.airthttpd.server.HttpListener");
+		
 		private var _serverSocket:ServerSocket;
 
 		private var _connections:Vector.<HttpConnection>;
@@ -148,7 +153,7 @@ package com.tilfin.airthttpd.server {
 				return;
 			} catch (error:Error) {
 				httpres.statusCode = 500; // Internal Server Error
-				trace("(500 Internal Server Error) " + error.message);
+				log.error("(500 Internal Server Error) " + error.message);
 			}
 
 			exitHandling(httpres);
@@ -168,9 +173,9 @@ package com.tilfin.airthttpd.server {
 			} catch (error:Error) {
 				if (error.errorID == 2002) {
 					// socket is dead.
-					_logCallback("Socket is dead. " + error.message);
+					log.info("Socket is dead. " + error.message);
 				} else {
-					_logCallback(error.message);
+					log.error(error.message);
 				}
 				
 				httpres.httpConnection.dispose();
