@@ -43,6 +43,7 @@ package com.tilfin.airthttpd.server {
 		private var _headers:Object;
 
 		private var _location:String;
+		private var _contentLength:String = "-";
 		private var _body:ByteArray;
 
 		private var _hasDone:Boolean = false;
@@ -178,6 +179,13 @@ package com.tilfin.airthttpd.server {
 			_location = value;
 		}
 
+		/**
+		 * @return Content-Length
+		 */
+		public function get contentLength():String {
+			return _contentLength;
+		}
+		
 		public function set body(data:*):void {
 			if (data is ByteArray) {
 				_body = data;
@@ -275,13 +283,13 @@ package com.tilfin.airthttpd.server {
 		 */
 		public function completeComet():void {
 			if (_comet) {
-				exitHandlingCallback(this);
+				exitHandlingCallback(_httpconn.socket, this);
 				_comet = false;
 			}
 		}
 
 		//===</ for comet >=======================
-
+		
 		/**
 		 * output HTTP response.
 		 *
@@ -312,8 +320,11 @@ package com.tilfin.airthttpd.server {
 					header.push("Content-Range: bytes " + _rangeStart + "-" + _rangeEnd + "/" + _rangeSize);
 				}
 
-				header.push("Content-Length: " + _body.length.toString());
+				_contentLength = _body.length.toString();
+				header.push("Content-Length: " + _contentLength);
 				header.push("Content-Type: " + _contentType);
+			} else {
+				_contentLength = "0";
 			}
 
 			var skt:Socket = _httpconn.socket;
