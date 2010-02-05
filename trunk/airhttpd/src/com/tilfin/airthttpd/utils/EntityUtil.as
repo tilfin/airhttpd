@@ -1,8 +1,7 @@
 package com.tilfin.airthttpd.utils {
-	import com.tilfin.airthttpd.server.HttpResponse;
-
+	import flash.utils.ByteArray;
 	import flash.xml.XMLDocument;
-
+	
 	import mx.rpc.xml.SimpleXMLDecoder;
 	import mx.rpc.xml.SimpleXMLEncoder;
 
@@ -55,16 +54,21 @@ package com.tilfin.airthttpd.utils {
 		 * 
 		 * @param contentType Content-Type of entity
 		 * @param entity AS plain object
-		 * @return content string
+		 * @return content string or ByteArray
 		 * 
-		 */		
-		public static function getEntityBody(contentType:String, entity:Object):String {
+		 */
+		public static function getEntityBody(contentType:String, entity:Object):* {
 			if (contentType == "application/xml") {
 				return EntityUtil.toXml(entity);
 
 			} else if (contentType == "application/json") {
 				return JsonUtil.generate(entity);
-
+			
+			} else if (contentType == "application/x-amf") {
+				var bytes:ByteArray = new ByteArray();
+				bytes.writeObject(entity);
+				return bytes; 
+				
 			} else {
 				return entity.toString();
 			}
