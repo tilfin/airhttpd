@@ -15,6 +15,14 @@ package com.tilfin.airthttpd.utils {
 
 		private static var RFC822_PATTERN:RegExp = /^([A-Z][a-z]{2}), (\d{1,2}) ([A-Z][a-z]{2}) (\d{2,4}) (\d{2}):(\d{2}):(\d{2}) ([A-Z]+)/ 
 
+		/**
+		 * Returns a date for RFC822.
+		 *
+		 * @param str a date string formatted for RFC822
+		 * @return date for RFC822
+		 *
+		 * @see http://asg.web.cmu.edu/rfc/rfc822.html
+		 */
 		public static function fromRFC822(str:String):Date {
 			var result:Array = RFC822_PATTERN.exec(str);
 			if (result == null || result.length != 9) {
@@ -32,7 +40,6 @@ package com.tilfin.airthttpd.utils {
 				case "GMT":
 				case "UTC":
 					var date:Date = new Date(Date.UTC(year, month, day, hour, min, sec, 0));
-					trace(date.toLocaleString());
 					return date;
 				default:
 				return null;
