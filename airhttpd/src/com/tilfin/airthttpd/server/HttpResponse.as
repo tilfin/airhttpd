@@ -5,6 +5,9 @@ package com.tilfin.airthttpd.server {
 	import flash.net.Socket;
 	import flash.net.URLRequestMethod;
 	import flash.utils.ByteArray;
+	
+	import mx.logging.ILogger;
+	import mx.logging.Log;
 
 	/**
 	 * HTTP Response
@@ -13,6 +16,8 @@ package com.tilfin.airthttpd.server {
 	 *
 	 */
 	public class HttpResponse {
+		
+		private static var log:ILogger = Log.getLogger("com.tilfin.airthttpd.server.HttpResponse");
 	
 		private static const SERVER:String = "Server: AirHttpd/0.1.0";
 		private static const NEWLINE:String = "\r\n";
@@ -316,7 +321,7 @@ package com.tilfin.airthttpd.server {
 				throw new SocketError();
 			}
 			
-			trace(header.join("\n"));
+			log.debug(header.join("\n"));
 
 			skt.writeUTFBytes(header.join(NEWLINE));
 			skt.writeUTFBytes(NEWLINE + NEWLINE);

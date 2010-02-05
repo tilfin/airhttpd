@@ -9,6 +9,8 @@ package com.tilfin.airthttpd.server {
 	import flash.net.URLRequestMethod;
 	import flash.utils.ByteArray;
 	
+	import mx.logging.ILogger;
+	import mx.logging.Log;
 	import mx.utils.StringUtil;
 
 	[Event(type="com.tilfin.airhttpd.events.HandleEvent", name="handle")]
@@ -24,6 +26,9 @@ package com.tilfin.airthttpd.server {
 	 * 
 	 */
 	public class HttpConnection extends EventDispatcher {
+		
+		private static var log:ILogger = Log.getLogger("com.tilfin.airthttpd.server.HttpConnection");
+		
 		private static const HEADER_END:String = "\r\n\r\n";
 		private static const NEWLINE:String = "\r\n";
 
@@ -77,7 +82,7 @@ package com.tilfin.airthttpd.server {
 				try {
 					httpres.flush();
 				} catch (err2:Error) {
-					trace(err2.message);
+					log.error(err2.message);
 				}
 
 				// force to close connection.
@@ -143,7 +148,8 @@ package com.tilfin.airthttpd.server {
 			var lines:Array = new Array();
 			
 			lines = headerStr.split(NEWLINE);
-			trace(lines.join("\n"));
+			
+			log.debug(lines.join("\n"));
 			
 			var request:String = lines.shift();
 
