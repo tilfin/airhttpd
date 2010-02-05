@@ -1,0 +1,4 @@
+#summary airhttpd.swc のリリースノート
+
+=== Version 0.5 ===
+ * Flex 3.5a と AIR 2.0 beta 2 に対応。
